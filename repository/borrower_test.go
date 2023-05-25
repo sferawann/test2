@@ -111,16 +111,6 @@ func createBorrower(t *testing.T, repo BorrowerRepository) model.Borrower {
 	return createdBorrower
 }
 
-func setupTestDB(t *testing.T) *gorm.DB {
-	dsn := "host=localhost user=postgres password=sql1234 dbname=pinjaman_online port=5432 sslmode=disable"
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	require.NoError(t, err)
-
-	// Perform any necessary database setup
-
-	return db
-}
-
 // ================ Find By ID ========================
 func TestFindByIdBorrower(t *testing.T) {
 	db := setupTestDB(t)
@@ -219,6 +209,7 @@ func TestFindAll(t *testing.T) {
 	}
 }
 
+// ================ Delete ========================
 func TestDeleteBorrower(t *testing.T) {
 	db := setupTestDB(t)
 	repo := NewBorrowerRepositoryImpl(db)
@@ -241,4 +232,14 @@ func TestDeleteBorrower(t *testing.T) {
 	// Delete the borrower
 	_, err = repo.Delete(3)
 	require.NoError(t, err)
+}
+
+func setupTestDB(t *testing.T) *gorm.DB {
+	dsn := "host=localhost user=postgres password=sql1234 dbname=pinjaman_online port=5432 sslmode=disable"
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	require.NoError(t, err)
+
+	// Perform any necessary database setup
+
+	return db
 }

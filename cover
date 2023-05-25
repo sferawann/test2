@@ -10,7 +10,7 @@ github.com/sferawann/test2/repository/borrower_repository_impl.go:56.98,60.2 3 1
 github.com/sferawann/test2/repository/borrower_repository_impl.go:63.90,67.25 3 1
 github.com/sferawann/test2/repository/borrower_repository_impl.go:67.25,69.3 1 1
 github.com/sferawann/test2/repository/borrower_repository_impl.go:70.2,70.17 1 1
-github.com/sferawann/test2/repository/lender_repository_impl.go:16.60,18.2 1 0
+github.com/sferawann/test2/repository/lender_repository_impl.go:16.60,18.2 1 1
 github.com/sferawann/test2/repository/lender_repository_impl.go:21.71,26.2 4 0
 github.com/sferawann/test2/repository/lender_repository_impl.go:29.66,34.2 4 0
 github.com/sferawann/test2/repository/lender_repository_impl.go:37.73,40.19 3 0
@@ -19,7 +19,7 @@ github.com/sferawann/test2/repository/lender_repository_impl.go:42.8,44.3 1 0
 github.com/sferawann/test2/repository/lender_repository_impl.go:48.78,52.25 3 0
 github.com/sferawann/test2/repository/lender_repository_impl.go:52.25,54.3 1 0
 github.com/sferawann/test2/repository/lender_repository_impl.go:55.2,55.17 1 0
-github.com/sferawann/test2/repository/lender_repository_impl.go:59.83,65.2 5 0
+github.com/sferawann/test2/repository/lender_repository_impl.go:59.83,65.2 5 1
 github.com/sferawann/test2/repository/lender_repository_impl.go:68.89,72.2 3 0
 github.com/sferawann/test2/repository/loan_product_repository_impl.go:16.70,18.2 1 0
 github.com/sferawann/test2/repository/loan_product_repository_impl.go:21.81,26.2 4 0
