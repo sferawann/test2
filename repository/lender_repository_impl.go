@@ -17,26 +17,26 @@ func NewLenderRepositoryImpl(Db *gorm.DB) LenderRepository {
 	return &LenderRepositoryImpl{Db: Db}
 }
 
-// Delete implements UsersRepository
-func (u *LenderRepositoryImpl) Delete(id int64) (model.Lender, error) {
+// Delete implements LenderRepository
+func (r *LenderRepositoryImpl) Delete(id int64) (model.Lender, error) {
 	var len model.Lender
-	result := u.Db.Where("id = ?", id).Delete(&len)
+	result := r.Db.Where("id = ?", id).Delete(&len)
 	helper.ErrorPanic(result.Error)
 	return len, nil
 }
 
-// FindAll implements UsersRepository
-func (u *LenderRepositoryImpl) FindAll() []model.Lender {
+// FindAll implements LenderRepository
+func (r *LenderRepositoryImpl) FindAll() ([]model.Lender, error) {
 	var len []model.Lender
-	results := u.Db.Find(&len)
+	results := r.Db.Find(&len)
 	helper.ErrorPanic(results.Error)
-	return len
+	return len, nil
 }
 
-// FindById implements UsersRepository
-func (u *LenderRepositoryImpl) FindById(id int64) (model.Lender, error) {
+// FindById implements LenderRepository
+func (r *LenderRepositoryImpl) FindById(id int64) (model.Lender, error) {
 	var len model.Lender
-	result := u.Db.Find(&len, id)
+	result := r.Db.Find(&len, id)
 	if result != nil {
 		return len, nil
 	} else {
@@ -44,23 +44,29 @@ func (u *LenderRepositoryImpl) FindById(id int64) (model.Lender, error) {
 	}
 }
 
-// Save implements UsersRepository
-func (u *LenderRepositoryImpl) Save(newLender model.Lender) {
-	currentTime := time.Now()
-	newLender.Created_At = currentTime
-	result := u.Db.Create(&newLender)
-	helper.ErrorPanic(result.Error)
+// FindByName implements LenderRepository
+func (r *LenderRepositoryImpl) FindByName(name string) (model.Lender, error) {
+	var len model.Lender
+	result := r.Db.First(&len, "name = ?", name)
+
+	if result.Error != nil {
+		return len, errors.New("invalid username or Password")
+	}
+	return len, nil
 }
 
-// Update implements UsersRepository
-func (u *LenderRepositoryImpl) Update(updatedLender model.Lender) {
-	var len model.Lender
-	create_at := len.Created_At
-	var updateLender = model.Lender{
-		Id:         updatedLender.Id,
-		Name:       updatedLender.Name,
-		Created_At: create_at,
-	}
-	result := u.Db.Model(&updatedLender).Updates(updateLender)
+// Save implements LenderRepository
+func (r *LenderRepositoryImpl) Save(newLender model.Lender) (model.Lender, error) {
+	currentTime := time.Now()
+	newLender.Created_At = currentTime
+	result := r.Db.Create(&newLender)
 	helper.ErrorPanic(result.Error)
+	return newLender, nil
+}
+
+// Update implements LenderRepository
+func (r *LenderRepositoryImpl) Update(updatedLender model.Lender) (model.Lender, error) {
+	result := r.Db.Model(&model.Lender{}).Where("id = ?", updatedLender.Id).Updates(updatedLender)
+	helper.ErrorPanic(result.Error)
+	return updatedLender, nil
 }

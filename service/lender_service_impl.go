@@ -11,32 +11,38 @@ type LenderServiceImpl struct {
 	Validate         *validator.Validate
 }
 
-// Delete implements BorrowerService
+// Delete implements LenderService
 func (s *LenderServiceImpl) Delete(id int64) (model.Lender, error) {
 	return s.LenderRepository.Delete(id)
 }
 
-// FindAll implements BorrowerService
-func (s *LenderServiceImpl) FindAll() []model.Lender {
+// FindAll implements LenderService
+func (s *LenderServiceImpl) FindAll() ([]model.Lender, error) {
 	return s.LenderRepository.FindAll()
 }
 
-// FindById implements BorrowerService
+// FindById implements LenderService
 func (s *LenderServiceImpl) FindById(id int64) (model.Lender, error) {
 	return s.LenderRepository.FindById(id)
 }
 
-// Save implements BorrowerService
-func (s *LenderServiceImpl) Save(newLender model.Lender) {
-	newBor := model.Lender{
+// FindByName implements LenderService
+func (s *LenderServiceImpl) FindByName(name string) (model.Lender, error) {
+	return s.LenderRepository.FindByName(name)
+}
+
+// Save implements LenderService
+func (s *LenderServiceImpl) Save(newLender model.Lender) (model.Lender, error) {
+	newLen := model.Lender{
 		Name:       newLender.Name,
 		Created_At: newLender.Created_At,
 	}
-	s.LenderRepository.Save(newBor)
+	return s.LenderRepository.Save(newLen)
+
 }
 
-// Update implements BorrowerService
-func (s *LenderServiceImpl) Update(updatedLender model.Lender) {
+// Update implements LenderService
+func (s *LenderServiceImpl) Update(updatedLender model.Lender) (model.Lender, error) {
 	var len model.Lender
 	create_at := len.Created_At
 
@@ -44,7 +50,8 @@ func (s *LenderServiceImpl) Update(updatedLender model.Lender) {
 		Name:       updatedLender.Name,
 		Created_At: create_at,
 	}
-	s.LenderRepository.Update(newLen)
+
+	return s.LenderRepository.Update(newLen)
 }
 
 func NewLenderServiceImpl(lenderRepository repository.LenderRepository, validate *validator.Validate) LenderService {

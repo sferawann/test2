@@ -1,8 +1,8 @@
-package repository
+package service
 
 import "github.com/sferawann/test2/model"
 
-type LenderRepository interface {
+type LenderService interface {
 	Save(newLender model.Lender) (model.Lender, error)
 	Update(updatedLender model.Lender) (model.Lender, error)
 	Delete(id int64) (model.Lender, error)

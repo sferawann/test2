@@ -4,7 +4,6 @@ import (
 	"errors"
 	"time"
 
-	"github.com/sferawann/test2/data/request"
 	"github.com/sferawann/test2/helper"
 	"github.com/sferawann/test2/model"
 	"gorm.io/gorm"
@@ -19,25 +18,25 @@ func NewBorrowerRepositoryImpl(Db *gorm.DB) BorrowerRepository {
 }
 
 // Delete implements UsersRepository
-func (u *BorrowerRepositoryImpl) Delete(id int64) (model.Borrower, error) {
+func (r *BorrowerRepositoryImpl) Delete(id int64) (model.Borrower, error) {
 	var bor model.Borrower
-	result := u.Db.Where("id = ?", id).Delete(&bor)
+	result := r.Db.Where("id = ?", id).Delete(&bor)
 	helper.ErrorPanic(result.Error)
 	return bor, nil
 }
 
 // FindAll implements UsersRepository
-func (u *BorrowerRepositoryImpl) FindAll() []model.Borrower {
+func (r *BorrowerRepositoryImpl) FindAll() ([]model.Borrower, error) {
 	var bor []model.Borrower
-	results := u.Db.Find(&bor)
+	results := r.Db.Find(&bor)
 	helper.ErrorPanic(results.Error)
-	return bor
+	return bor, nil
 }
 
 // FindById implements UsersRepository
-func (u *BorrowerRepositoryImpl) FindById(id int64) (model.Borrower, error) {
+func (r *BorrowerRepositoryImpl) FindById(id int64) (model.Borrower, error) {
 	var bor model.Borrower
-	result := u.Db.Find(&bor, id)
+	result := r.Db.Find(&bor, id)
 	if result != nil {
 		return bor, nil
 	} else {
@@ -46,34 +45,25 @@ func (u *BorrowerRepositoryImpl) FindById(id int64) (model.Borrower, error) {
 }
 
 // Save implements UsersRepository
-func (u *BorrowerRepositoryImpl) Save(newBorrower model.Borrower) {
+func (r *BorrowerRepositoryImpl) Save(newBorrower model.Borrower) (model.Borrower, error) {
 	currentTime := time.Now()
 	newBorrower.Created_At = currentTime
-	result := u.Db.Create(&newBorrower)
+	result := r.Db.Create(&newBorrower)
 	helper.ErrorPanic(result.Error)
+	return newBorrower, nil
 }
 
 // Update implements UsersRepository
-func (u *BorrowerRepositoryImpl) Update(updatedBorrowers model.Borrower) {
-	var bor model.Borrower
-	create_at := bor.Created_At
-	var updateBorrower = request.UpdateBorrowerRequest{
-		Id:           updatedBorrowers.Id,
-		Username:     updatedBorrowers.Username,
-		Password:     updatedBorrowers.Password,
-		Name:         updatedBorrowers.Name,
-		Alamat:       updatedBorrowers.Alamat,
-		Phone_Number: updatedBorrowers.Phone_Number,
-		Created_At:   create_at,
-	}
-	result := u.Db.Model(&updatedBorrowers).Updates(updateBorrower)
+func (r *BorrowerRepositoryImpl) Update(updatedBorrowers model.Borrower) (model.Borrower, error) {
+	result := r.Db.Model(&model.Borrower{}).Where("id = ?", updatedBorrowers.Id).Updates(updatedBorrowers)
 	helper.ErrorPanic(result.Error)
+	return updatedBorrowers, nil
 }
 
 // FindByUsername implements UsersRepository
-func (u *BorrowerRepositoryImpl) FindByUsername(username string) (model.Borrower, error) {
+func (r *BorrowerRepositoryImpl) FindByUsername(username string) (model.Borrower, error) {
 	var bor model.Borrower
-	result := u.Db.First(&bor, "username = ?", username)
+	result := r.Db.First(&bor, "username = ?", username)
 
 	if result.Error != nil {
 		return bor, errors.New("invalid username or Password")

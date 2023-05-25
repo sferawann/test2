@@ -41,18 +41,18 @@ func (c *LenderController) Update(ctx *gin.Context) {
 	id, err := strconv.ParseInt(idParam, 10, 64)
 	helper.ErrorPanic(err)
 
-	updateLen := model.Lender{}
+	updateLen := model.Lender{Id: id}
 	err = ctx.ShouldBindJSON(&updateLen)
 	helper.ErrorPanic(err)
 
-	updateLen.Id = id
-	c.lenderService.Update(updateLen)
+	updatedLender, err := c.lenderService.Update(updateLen)
+	helper.ErrorPanic(err)
 
 	webResponse := response.Response{
 		Code:    200,
 		Status:  "Ok",
 		Message: "Successfully updated Lender!",
-		Data:    nil,
+		Data:    updatedLender,
 	}
 
 	ctx.JSON(http.StatusOK, webResponse)
@@ -76,12 +76,13 @@ func (c *LenderController) Delete(ctx *gin.Context) {
 }
 
 func (c *LenderController) FindAll(ctx *gin.Context) {
-	bor := c.lenderService.FindAll()
+	len, err := c.lenderService.FindAll()
+	helper.ErrorPanic(err)
 	webResponse := response.Response{
 		Code:    200,
 		Status:  "Ok",
 		Message: "Successfully fetch all Lender data!",
-		Data:    bor,
+		Data:    len,
 	}
 
 	ctx.JSON(http.StatusOK, webResponse)
@@ -92,14 +93,30 @@ func (c *LenderController) FindByID(ctx *gin.Context) {
 	id, err := strconv.ParseInt(idParam, 10, 64)
 	helper.ErrorPanic(err)
 
-	bor, err := c.lenderService.FindById(id)
+	len, err := c.lenderService.FindById(id)
 	helper.ErrorPanic(err)
 
 	webResponse := response.Response{
 		Code:    200,
 		Status:  "Ok",
 		Message: "Successfully fetched Lender!",
-		Data:    bor,
+		Data:    len,
+	}
+
+	ctx.JSON(http.StatusOK, webResponse)
+}
+
+func (c *LenderController) FindByName(ctx *gin.Context) {
+	userParam := ctx.Param("name")
+
+	len, err := c.lenderService.FindByName(userParam)
+	helper.ErrorPanic(err)
+
+	webResponse := response.Response{
+		Code:    200,
+		Status:  "Ok",
+		Message: "Successfully fetched Lender!",
+		Data:    len,
 	}
 
 	ctx.JSON(http.StatusOK, webResponse)
