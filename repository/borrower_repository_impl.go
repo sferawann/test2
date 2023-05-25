@@ -46,11 +46,14 @@ func (u *BorrowerRepositoryImpl) FindById(id int64) (model.Borrower, error) {
 }
 
 // Save implements UsersRepository
-func (u *BorrowerRepositoryImpl) Save(newBorrower model.Borrower) {
+func (u *BorrowerRepositoryImpl) Save(newBorrower model.Borrower) (model.Borrower, error) {
 	currentTime := time.Now()
 	newBorrower.Created_At = currentTime
 	result := u.Db.Create(&newBorrower)
-	helper.ErrorPanic(result.Error)
+	if result.Error != nil {
+		return model.Borrower{}, result.Error
+	}
+	return newBorrower, nil
 }
 
 // Update implements UsersRepository
