@@ -14,8 +14,8 @@ type BorrowerServiceImpl struct {
 }
 
 // Delete implements BorrowerService
-func (s *BorrowerServiceImpl) Delete(deletedBorrower model.Borrower) error {
-	return s.BorrowerRepository.Delete(deletedBorrower)
+func (s *BorrowerServiceImpl) Delete(id int64) (model.Borrower, error) {
+	return s.BorrowerRepository.Delete(id)
 }
 
 // FindAll implements BorrowerService
@@ -35,18 +35,16 @@ func (s *BorrowerServiceImpl) FindByUsername(username string) (model.Borrower, e
 
 // Save implements BorrowerService
 func (s *BorrowerServiceImpl) Save(newBorrower model.Borrower) {
-	hashedPassword, err := utils.HashPassword(newBorrower.Password)
+	hashPassword, err := utils.HashPassword(newBorrower.Password)
 	helper.ErrorPanic(err)
-	var bor model.Borrower
-	create_at := bor.Created_At
 
 	newBor := model.Borrower{
 		Username:     newBorrower.Username,
-		Password:     hashedPassword,
+		Password:     hashPassword,
 		Name:         newBorrower.Name,
 		Alamat:       newBorrower.Alamat,
 		Phone_Number: newBorrower.Phone_Number,
-		Created_At:   create_at,
+		Created_At:   newBorrower.Created_At,
 	}
 	s.BorrowerRepository.Save(newBor)
 }

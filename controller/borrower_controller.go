@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sferawann/test2/data/response"
@@ -19,28 +20,59 @@ func NewBorrowerController(service service.BorrowerService) *BorrowerController 
 }
 
 func (c *BorrowerController) Insert(ctx *gin.Context) {
-	var bor model.Borrower
-
-	err := ctx.ShouldBindJSON(&bor)
+	createBor := model.Borrower{}
+	err := ctx.ShouldBindJSON(&createBor)
 	helper.ErrorPanic(err)
 
-	c.borrowerService.Save(bor)
+	c.borrowerService.Save(createBor)
 
 	webResponse := response.Response{
 		Code:    200,
 		Status:  "Ok",
-		Message: "Successfully Add data Borrower!",
-		Data:    bor,
+		Message: "Successfully created Borrower!",
+		Data:    nil,
 	}
 
 	ctx.JSON(http.StatusOK, webResponse)
 }
 
 func (c *BorrowerController) Update(ctx *gin.Context) {
-	panic("unimplemented")
+	idParam := ctx.Param("id")
+	id, err := strconv.ParseInt(idParam, 10, 64)
+	helper.ErrorPanic(err)
+
+	updateBor := model.Borrower{}
+	err = ctx.ShouldBindJSON(&updateBor)
+	helper.ErrorPanic(err)
+
+	updateBor.Id = id
+	c.borrowerService.Update(updateBor)
+
+	webResponse := response.Response{
+		Code:    200,
+		Status:  "Ok",
+		Message: "Successfully updated Borrower!",
+		Data:    nil,
+	}
+
+	ctx.JSON(http.StatusOK, webResponse)
 }
 func (c *BorrowerController) Delete(ctx *gin.Context) {
-	panic("unimplemented")
+	idParam := ctx.Param("id")
+	id, err := strconv.ParseInt(idParam, 10, 64)
+	helper.ErrorPanic(err)
+
+	c.borrowerService.Delete(id)
+	helper.ErrorPanic(err)
+
+	webResponse := response.Response{
+		Code:    200,
+		Status:  "Ok",
+		Message: "Successfully deleted Borrower!",
+		Data:    nil,
+	}
+
+	ctx.JSON(http.StatusOK, webResponse)
 }
 
 func (c *BorrowerController) FindAll(ctx *gin.Context) {
@@ -56,9 +88,35 @@ func (c *BorrowerController) FindAll(ctx *gin.Context) {
 }
 
 func (c *BorrowerController) FindByID(ctx *gin.Context) {
-	panic("unimplemented")
+	idParam := ctx.Param("id")
+	id, err := strconv.ParseInt(idParam, 10, 64)
+	helper.ErrorPanic(err)
+
+	bor, err := c.borrowerService.FindById(id)
+	helper.ErrorPanic(err)
+
+	webResponse := response.Response{
+		Code:    200,
+		Status:  "Ok",
+		Message: "Successfully fetched Borrower!",
+		Data:    bor,
+	}
+
+	ctx.JSON(http.StatusOK, webResponse)
 }
 
 func (c *BorrowerController) FindByUsername(ctx *gin.Context) {
-	panic("unimplemented")
+	userParam := ctx.Param("username")
+
+	bor, err := c.borrowerService.FindByUsername(userParam)
+	helper.ErrorPanic(err)
+
+	webResponse := response.Response{
+		Code:    200,
+		Status:  "Ok",
+		Message: "Successfully fetched Borrower!",
+		Data:    bor,
+	}
+
+	ctx.JSON(http.StatusOK, webResponse)
 }

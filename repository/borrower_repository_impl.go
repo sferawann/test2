@@ -19,11 +19,11 @@ func NewBorrowerRepositoryImpl(Db *gorm.DB) BorrowerRepository {
 }
 
 // Delete implements UsersRepository
-func (u *BorrowerRepositoryImpl) Delete(updatedBorrowers model.Borrower) error {
+func (u *BorrowerRepositoryImpl) Delete(id int64) (model.Borrower, error) {
 	var bor model.Borrower
-	result := u.Db.Where("id = ?", updatedBorrowers).Delete(&bor)
+	result := u.Db.Where("id = ?", id).Delete(&bor)
 	helper.ErrorPanic(result.Error)
-	return nil
+	return bor, nil
 }
 
 // FindAll implements UsersRepository

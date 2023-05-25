@@ -28,18 +28,23 @@ func main() {
 
 	// db.Table("borrowers").AutoMigrate(&model.Users{})
 	db.Table("borrowers").Find(&model.Borrower{})
+	db.Table("lenders").Find(&model.Lender{})
 
 	//Init Repository
 	borRepo := repository.NewBorrowerRepositoryImpl(db)
+	lenRepo := repository.NewLenderRepositoryImpl(db)
 
 	//Init Service
 	authService := service.NewAuthServiceImpl(borRepo, validate)
+	borService := service.NewBorrowerServiceImpl(borRepo, validate)
+	lenService := service.NewLenderServiceImpl(lenRepo, validate)
 
 	//Init controller
 	authController := controller.NewAuthController(authService)
-	borController := controller.NewBorrowerController(borRepo)
+	borController := controller.NewBorrowerController(borService)
+	lenController := controller.NewLenderController(lenService)
 
-	routes := router.NewRouter(borRepo, authController, borController)
+	routes := router.NewRouter(borRepo, authController, borController,lenController)
 
 	server := &http.Server{
 		Addr:           ":" + loadConfig.ServerPort,
