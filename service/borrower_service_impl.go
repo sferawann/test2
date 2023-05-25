@@ -14,12 +14,12 @@ type BorrowerServiceImpl struct {
 }
 
 // Delete implements BorrowerService
-func (s *BorrowerServiceImpl) Delete(deletedBorrower model.Borrower) error {
-	return s.BorrowerRepository.Delete(deletedBorrower)
+func (s *BorrowerServiceImpl) Delete(id int64) (model.Borrower, error) {
+	return s.BorrowerRepository.Delete(id)
 }
 
 // FindAll implements BorrowerService
-func (s *BorrowerServiceImpl) FindAll() []model.Borrower {
+func (s *BorrowerServiceImpl) FindAll() ([]model.Borrower, error) {
 	return s.BorrowerRepository.FindAll()
 }
 
@@ -34,31 +34,32 @@ func (s *BorrowerServiceImpl) FindByUsername(username string) (model.Borrower, e
 }
 
 // Save implements BorrowerService
-func (s *BorrowerServiceImpl) Save(newBorrower model.Borrower) {
-	hashedPassword, err := utils.HashPassword(newBorrower.Password)
+func (s *BorrowerServiceImpl) Save(newBorrower model.Borrower) (model.Borrower, error) {
+	hashPassword, err := utils.HashPassword(newBorrower.Password)
 	helper.ErrorPanic(err)
-	var bor model.Borrower
-	create_at := bor.Created_At
 
 	newBor := model.Borrower{
 		Username:     newBorrower.Username,
-		Password:     hashedPassword,
+		Password:     hashPassword,
 		Name:         newBorrower.Name,
 		Alamat:       newBorrower.Alamat,
 		Phone_Number: newBorrower.Phone_Number,
-		Created_At:   create_at,
+		Created_At:   newBorrower.Created_At,
 	}
-	s.BorrowerRepository.Save(newBor)
+	return s.BorrowerRepository.Save(newBor)
+
 }
 
 // Update implements BorrowerService
-func (s *BorrowerServiceImpl) Update(updatedBorrower model.Borrower) {
+func (s *BorrowerServiceImpl) Update(updatedBorrower model.Borrower) (model.Borrower, error) {
 	hashedPassword, err := utils.HashPassword(updatedBorrower.Password)
 	helper.ErrorPanic(err)
+
 	var bor model.Borrower
 	create_at := bor.Created_At
 
 	newBor := model.Borrower{
+		Id:           updatedBorrower.Id,
 		Username:     updatedBorrower.Username,
 		Password:     hashedPassword,
 		Name:         updatedBorrower.Name,
@@ -66,7 +67,8 @@ func (s *BorrowerServiceImpl) Update(updatedBorrower model.Borrower) {
 		Phone_Number: updatedBorrower.Phone_Number,
 		Created_At:   create_at,
 	}
-	s.BorrowerRepository.Update(newBor)
+
+	return s.BorrowerRepository.Update(newBor)
 }
 
 func NewBorrowerServiceImpl(borrowerRepository repository.BorrowerRepository, validate *validator.Validate) BorrowerService {

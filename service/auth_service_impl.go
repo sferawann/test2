@@ -51,16 +51,14 @@ func (s *AuthServiceImpl) Register(borrower request.CreateBorrowerRequest) {
 
 	hashedPassword, err := utils.HashPassword(borrower.Password)
 	helper.ErrorPanic(err)
-	var bor model.Borrower
-	create_at := bor.Created_At
 
-	newBorrower := model.Borrower{
+	newBor := model.Borrower{
 		Username:     borrower.Username,
 		Password:     hashedPassword,
 		Name:         borrower.Name,
 		Alamat:       borrower.Alamat,
 		Phone_Number: borrower.Phone_Number,
-		Created_At:   create_at,
+		Created_At:   borrower.Created_At,
 	}
-	s.BorrowerRepository.Save(newBorrower)
+	s.BorrowerRepository.Save(newBor)
 }

@@ -11,112 +11,112 @@ import (
 	"github.com/sferawann/test2/service"
 )
 
-type BorrowerController struct {
-	borrowerService service.BorrowerService
+type LoanProductController struct {
+	loanProductService service.LoanProductService
 }
 
-func NewBorrowerController(service service.BorrowerService) *BorrowerController {
-	return &BorrowerController{borrowerService: service}
+func NewLoanProductController(service service.LoanProductService) *LoanProductController {
+	return &LoanProductController{loanProductService: service}
 }
 
-func (c *BorrowerController) Insert(ctx *gin.Context) {
-	createBor := model.Borrower{}
-	err := ctx.ShouldBindJSON(&createBor)
+func (c *LoanProductController) Insert(ctx *gin.Context) {
+	createLP := model.LoanProduct{}
+	err := ctx.ShouldBindJSON(&createLP)
 	helper.ErrorPanic(err)
 
-	c.borrowerService.Save(createBor)
+	c.loanProductService.Save(createLP)
 
 	webResponse := response.Response{
 		Code:    200,
 		Status:  "Ok",
-		Message: "Successfully created Borrower!",
+		Message: "Successfully created Lender!",
 		Data:    nil,
 	}
 
 	ctx.JSON(http.StatusOK, webResponse)
 }
 
-func (c *BorrowerController) Update(ctx *gin.Context) {
+func (c *LoanProductController) Update(ctx *gin.Context) {
 	idParam := ctx.Param("id")
 	id, err := strconv.ParseInt(idParam, 10, 64)
 	helper.ErrorPanic(err)
 
-	updateBor := model.Borrower{Id: id}
-	err = ctx.ShouldBindJSON(&updateBor)
+	updateLP := model.LoanProduct{Id: id}
+	err = ctx.ShouldBindJSON(&updateLP)
 	helper.ErrorPanic(err)
 
-	updatedBorrower, err := c.borrowerService.Update(updateBor)
+	updatedLender, err := c.loanProductService.Update(updateLP)
 	helper.ErrorPanic(err)
 
 	webResponse := response.Response{
 		Code:    200,
 		Status:  "Ok",
-		Message: "Successfully updated Borrower!",
-		Data:    updatedBorrower,
+		Message: "Successfully updated Lender!",
+		Data:    updatedLender,
 	}
 
 	ctx.JSON(http.StatusOK, webResponse)
 }
-func (c *BorrowerController) Delete(ctx *gin.Context) {
+func (c *LoanProductController) Delete(ctx *gin.Context) {
 	idParam := ctx.Param("id")
 	id, err := strconv.ParseInt(idParam, 10, 64)
 	helper.ErrorPanic(err)
 
-	c.borrowerService.Delete(id)
+	c.loanProductService.Delete(id)
 	helper.ErrorPanic(err)
 
 	webResponse := response.Response{
 		Code:    200,
 		Status:  "Ok",
-		Message: "Successfully deleted Borrower!",
+		Message: "Successfully deleted Lender!",
 		Data:    nil,
 	}
 
 	ctx.JSON(http.StatusOK, webResponse)
 }
 
-func (c *BorrowerController) FindAll(ctx *gin.Context) {
-	bor, err := c.borrowerService.FindAll()
+func (c *LoanProductController) FindAll(ctx *gin.Context) {
+	lp, err := c.loanProductService.FindAll()
 	helper.ErrorPanic(err)
 	webResponse := response.Response{
 		Code:    200,
 		Status:  "Ok",
-		Message: "Successfully fetch all borrower data!",
-		Data:    bor,
+		Message: "Successfully fetch all Lender data!",
+		Data:    lp,
 	}
 
 	ctx.JSON(http.StatusOK, webResponse)
 }
 
-func (c *BorrowerController) FindByID(ctx *gin.Context) {
+func (c *LoanProductController) FindByID(ctx *gin.Context) {
 	idParam := ctx.Param("id")
 	id, err := strconv.ParseInt(idParam, 10, 64)
 	helper.ErrorPanic(err)
 
-	bor, err := c.borrowerService.FindById(id)
+	lp, err := c.loanProductService.FindById(id)
 	helper.ErrorPanic(err)
 
 	webResponse := response.Response{
 		Code:    200,
 		Status:  "Ok",
-		Message: "Successfully fetched Borrower!",
-		Data:    bor,
+		Message: "Successfully fetched Lender!",
+		Data:    lp,
 	}
 
 	ctx.JSON(http.StatusOK, webResponse)
 }
 
-func (c *BorrowerController) FindByUsername(ctx *gin.Context) {
-	userParam := ctx.Param("username")
+func (c *LoanProductController) FindByName(ctx *gin.Context) {
+	userParam := ctx.Query("name")
 
-	bor, err := c.borrowerService.FindByUsername(userParam)
+	lp, err := c.loanProductService.FindByName(userParam)
 	helper.ErrorPanic(err)
 
 	webResponse := response.Response{
 		Code:    200,
 		Status:  "Ok",
-		Message: "Successfully fetched Borrower!",
-		Data:    bor,
+		Message: "Successfully fetched Lender!",
+		Data:    lp,
 	}
 
 	ctx.JSON(http.StatusOK, webResponse)

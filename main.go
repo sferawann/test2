@@ -26,20 +26,28 @@ func main() {
 	db := config.ConnectionDB(&loadConfig)
 	validate := validator.New()
 
-	// db.Table("borrowers").AutoMigrate(&model.Users{})
 	db.Table("borrowers").Find(&model.Borrower{})
+	db.Table("lenders").Find(&model.Lender{})
+	db.Table("loan_products").Find(&model.LoanProduct{})
 
 	//Init Repository
 	borRepo := repository.NewBorrowerRepositoryImpl(db)
+	lenRepo := repository.NewLenderRepositoryImpl(db)
+	lpRepo := repository.NewLoanProductRepositoryImpl(db)
 
 	//Init Service
 	authService := service.NewAuthServiceImpl(borRepo, validate)
+	borService := service.NewBorrowerServiceImpl(borRepo, validate)
+	lenService := service.NewLenderServiceImpl(lenRepo, validate)
+	lpService := service.NewLoanProductServiceImpl(lpRepo, validate)
 
 	//Init controller
 	authController := controller.NewAuthController(authService)
-	borController := controller.NewBorrowerController(borRepo)
+	borController := controller.NewBorrowerController(borService)
+	lenController := controller.NewLenderController(lenService)
+	lpController := controller.NewLoanProductController(lpService)
 
-	routes := router.NewRouter(borRepo, authController, borController)
+	routes := router.NewRouter(borRepo, authController, borController, lenController, lpController)
 
 	server := &http.Server{
 		Addr:           ":" + loadConfig.ServerPort,
