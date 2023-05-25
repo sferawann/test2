@@ -40,7 +40,7 @@ func (r *LenderRepositoryImpl) FindById(id int64) (model.Lender, error) {
 	if result != nil {
 		return len, nil
 	} else {
-		return len, errors.New("Lender is not found")
+		return len, errors.New("lender is not found")
 	}
 }
 

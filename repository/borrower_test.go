@@ -4,16 +4,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/sferawann/test2/model"
 	"github.com/sferawann/test2/utils"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-func createRandomBorrower(t *testing.T) BorrowerRepository {
+// ================ Save ========================
+func saveRandomBorrower(t *testing.T) BorrowerRepository {
 	currentTime := time.Now()
 	hashedpassword, err := utils.HashPassword(utils.RandomString(6))
 	require.NoError(t, err)
@@ -50,7 +49,7 @@ func createRandomBorrower(t *testing.T) BorrowerRepository {
 }
 
 func TestSaveBorrower(t *testing.T) {
-	createRandomBorrower(t)
+	saveRandomBorrower(t)
 }
 
 // ================ Update ========================
@@ -81,29 +80,6 @@ func TestUpdateBorrower(t *testing.T) {
 	require.Equal(t, borrower.Name, updatedBorrower.Name)
 	require.Equal(t, borrower.Alamat, updatedBorrower.Alamat)
 	require.Equal(t, borrower.Phone_Number, updatedBorrower.Phone_Number)
-}
-
-// ================ Find By ID ========================
-func TestFindByIdBorrower(t *testing.T) {
-	db := setupTestDB(t)
-	repo := NewBorrowerRepositoryImpl(db)
-
-	// Test FindById for ID 1
-	foundBorrower, err := repo.FindById(1)
-	require.NoError(t, err)
-
-	// Expected borrower with ID 1
-	expectedBorrower := model.Borrower{
-		Id:           1,
-		Username:     "Jono",
-		Password:     "$2a$10$ycv4VS.TiL.USMExDTpQZuAExOoUYdUWP8ahQWGMacscM/KR4Thzq",
-		Name:         "Jono Joni",
-		Alamat:       "Bandung",
-		Phone_Number: "084578956",
-		Created_At:   time.Date(2023, time.May, 25, 0, 0, 23, 668047000, time.Local),
-	}
-
-	require.Equal(t, expectedBorrower, foundBorrower)
 }
 
 func createBorrower(t *testing.T, repo BorrowerRepository) model.Borrower {
@@ -145,29 +121,64 @@ func setupTestDB(t *testing.T) *gorm.DB {
 	return db
 }
 
-func TestFindAll(t *testing.T) {
-	// Setup mocking
-	db, mock, err := sqlmock.New()
-	assert.NoError(t, err)
-	defer db.Close()
-
+// ================ Find By ID ========================
+func TestFindByIdBorrower(t *testing.T) {
+	db := setupTestDB(t)
 	repo := NewBorrowerRepositoryImpl(db)
 
-	// Expected rows returned from the database
-	rows := sqlmock.NewRows([]string{"id", "username", "password", "name", "alamat", "phone_number", "created_at"}).
-		AddRow(1, "Jono", "$2a$10$ycv4VS.TiL.USMExDTpQZuAExOoUYdUWP8ahQWGMacscM/KR4Thzq", "Jono Joni", "Bandung", "084578956", "2023-05-25 00:00:23").
-		AddRow(2, "Jane", "$2a$10$ycv4VS.TiL.USMExDTpQZuAExOoUYdUWP8ahQWGMacscM/KR4Thzq", "Jane Doe", "Jakarta", "084578957", "2023-05-25 00:00:45")
+	// Test FindById for ID 1
+	foundBorrower, err := repo.FindById(1)
+	require.NoError(t, err)
 
-	// Expect the query to fetch all borrowers
-	mock.ExpectQuery("SELECT \\* FROM borrowers").WillReturnRows(rows)
+	// Expected borrower with ID 1
+	expectedBorrower := model.Borrower{
+		Id:           1,
+		Username:     "Jono",
+		Password:     "$2a$10$ycv4VS.TiL.USMExDTpQZuAExOoUYdUWP8ahQWGMacscM/KR4Thzq",
+		Name:         "Jono Joni",
+		Alamat:       "Bandung",
+		Phone_Number: "084578956",
+		Created_At:   time.Date(2023, time.May, 25, 0, 0, 23, 668047000, time.Local),
+	}
 
-	// Call FindAll
-	foundBorrowers, err := repo.FindAll()
-	assert.NoError(t, err)
-	assert.Len(t, foundBorrowers, 2)
+	require.Equal(t, expectedBorrower, foundBorrower)
+}
 
-	// Assert the expected borrowers
-	expectedBorrowers := []model.Borrower{
+// ================ Find By Username ========================
+func TestFindByUsernameBorrower(t *testing.T) {
+	db := setupTestDB(t)
+	repo := NewBorrowerRepositoryImpl(db)
+
+	// Test FindByUsername for username Jono
+	foundBorrower, err := repo.FindByUsername("Jono")
+	require.NoError(t, err)
+
+	// Expected borrower with Username Jono
+	expectedBorrower := model.Borrower{
+		Id:           1,
+		Username:     "Jono",
+		Password:     "$2a$10$ycv4VS.TiL.USMExDTpQZuAExOoUYdUWP8ahQWGMacscM/KR4Thzq",
+		Name:         "Jono Joni",
+		Alamat:       "Bandung",
+		Phone_Number: "084578956",
+		Created_At:   time.Date(2023, time.May, 25, 0, 0, 23, 668047000, time.Local),
+	}
+
+	require.Equal(t, expectedBorrower, foundBorrower)
+
+	// Test FindByUsername for non-existing username "Nonexistent"
+	_, err = repo.FindByUsername("Nonexistent")
+	require.Error(t, err)
+	require.EqualError(t, err, "invalid username or Password")
+}
+
+// ================ Find All ID ========================
+func TestFindAll(t *testing.T) {
+	db := setupTestDB(t)
+	repo := NewBorrowerRepositoryImpl(db)
+
+	// Create multiple borrowers in the database
+	borrowers := []model.Borrower{
 		{
 			Id:           1,
 			Username:     "Jono",
@@ -175,21 +186,59 @@ func TestFindAll(t *testing.T) {
 			Name:         "Jono Joni",
 			Alamat:       "Bandung",
 			Phone_Number: "084578956",
-			Created_At:   time.Date(2023, time.May, 25, 0, 0, 23, 0, time.UTC),
+			Created_At:   time.Date(2023, time.May, 25, 0, 0, 23, 668047000, time.Local),
 		},
 		{
 			Id:           2,
-			Username:     "Jane",
-			Password:     "$2a$10$ycv4VS.TiL.USMExDTpQZuAExOoUYdUWP8ahQWGMacscM/KR4Thzq",
-			Name:         "Jane Doe",
-			Alamat:       "Jakarta",
-			Phone_Number: "084578957",
-			Created_At:   time.Date(2023, time.May, 25, 0, 0, 45, 0, time.UTC),
+			Username:     "Ibnu",
+			Password:     "$2a$10$XsA6dtRfHC..WjBfSXss1uSVCvBaWDI0CzrLMfikaj.rBp.czOt3S",
+			Name:         "Ibnu Farhan",
+			Alamat:       "Bandung",
+			Phone_Number: "08548785659",
+			Created_At:   time.Date(2023, time.May, 25, 0, 1, 2, 94739000, time.Local),
 		},
+		// Add more borrowers if needed
 	}
 
-	assert.ElementsMatch(t, expectedBorrowers, foundBorrowers)
+	// Test FindAll
+	foundBorrowers, err := repo.FindAll()
+	require.NoError(t, err)
+	require.Equal(t, len(borrowers), len(foundBorrowers))
 
-	// Ensure all expectations were met
-	assert.NoError(t, mock.ExpectationsWereMet())
+	// Compare each borrower in the expected list with the found borrowers
+	for _, expectedBorrower := range borrowers {
+		found := false
+		for _, actualBorrower := range foundBorrowers {
+			if expectedBorrower.Id == actualBorrower.Id {
+				require.Equal(t, expectedBorrower, actualBorrower)
+				found = true
+				break
+			}
+		}
+		require.True(t, found, "Borrower not found: ID %d", expectedBorrower.Id)
+	}
+}
+
+func TestDeleteBorrower(t *testing.T) {
+	db := setupTestDB(t)
+	repo := NewBorrowerRepositoryImpl(db)
+
+	// Create a borrower for deletion
+	borrower := model.Borrower{
+		Id:           3,
+		Username:     "Jini",
+		Password:     "123456",
+		Name:         "Jin",
+		Alamat:       "Bekasi",
+		Phone_Number: "084579",
+		Created_At:   time.Now().Local(),
+	}
+
+	// Save the borrower
+	_, err := repo.Save(borrower)
+	require.NoError(t, err)
+
+	// Delete the borrower
+	_, err = repo.Delete(3)
+	require.NoError(t, err)
 }

@@ -36,12 +36,11 @@ func (r *BorrowerRepositoryImpl) FindAll() ([]model.Borrower, error) {
 // FindById implements UsersRepository
 func (r *BorrowerRepositoryImpl) FindById(id int64) (model.Borrower, error) {
 	var bor model.Borrower
-	result := r.Db.Find(&bor, id)
-	if result != nil {
-		return bor, nil
-	} else {
-		return bor, errors.New("Borrower is not found")
+	result := r.Db.Find(&bor, "id = ?", id)
+	if result.Error != nil {
+		return bor, errors.New("borrower is not found")
 	}
+	return bor, nil
 }
 
 // Save implements UsersRepository

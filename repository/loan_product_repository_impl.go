@@ -40,7 +40,7 @@ func (r *LoanProductRepositoryImpl) FindById(id int64) (model.LoanProduct, error
 	if result != nil {
 		return lp, nil
 	} else {
-		return lp, errors.New("Lender is not found")
+		return lp, errors.New("lender is not found")
 	}
 }
 

@@ -24,13 +24,13 @@ func NewRouter(borrowerRepository repository.BorrowerRepository, authController 
 	// authRouter.POST("/register", authController.Register)
 	// authRouter.POST("/login", authController.Login)
 
-	// borRouter := router.Group("/borrowers")
-	// borRouter.POST("/", borrowerController.Insert)
-	// borRouter.GET("/", borrowerController.FindAll)
-	// borRouter.GET("/:id", borrowerController.FindByID)
-	// borRouter.DELETE("/:id", borrowerController.Delete)
-	// borRouter.GET("/username/:username", borrowerController.FindByUsername)
-	// borRouter.PUT("/:id", borrowerController.Update)
+	borRouter := router.Group("/borrowers")
+	borRouter.POST("/", borrowerController.Insert)
+	borRouter.GET("/", borrowerController.FindAll)
+	borRouter.GET("/:id", borrowerController.FindByID)
+	borRouter.DELETE("/:id", borrowerController.Delete)
+	borRouter.GET("/username/:username", borrowerController.FindByUsername)
+	borRouter.PUT("/:id", borrowerController.Update)
 	// borRouter.GET("/", middleware.DeserializeBorrower(borrowerRepository), borrowerController.FindAll)
 
 	// lenRouter := router.Group("/lenders")
@@ -41,13 +41,13 @@ func NewRouter(borrowerRepository repository.BorrowerRepository, authController 
 	// lenRouter.GET("/name/:name", lenderController.FindByName)
 	// lenRouter.PUT("/:id", lenderController.Update)
 
-	lpRouter := router.Group("/loan_products")
-	lpRouter.POST("/", loanProductController.Insert)
-	lpRouter.GET("/", loanProductController.FindAll)
-	lpRouter.GET("/:id", loanProductController.FindByID)
-	lpRouter.DELETE("/:id", loanProductController.Delete)
-	lpRouter.GET("/name/:name", loanProductController.FindByName)
-	lpRouter.PUT("/:id", loanProductController.Update)
+	// lpRouter := router.Group("/loan_products")
+	// lpRouter.POST("/", loanProductController.Insert)
+	// lpRouter.GET("/", loanProductController.FindAll)
+	// lpRouter.GET("/:id", loanProductController.FindByID)
+	// lpRouter.DELETE("/:id", loanProductController.Delete)
+	// lpRouter.GET("/name/:name", loanProductController.FindByName)
+	// lpRouter.PUT("/:id", loanProductController.Update)
 
 	return service
 }
